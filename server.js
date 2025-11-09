@@ -31,7 +31,7 @@ app.use(
   cors({
     origin: [
       "http://localhost:5173",
-      "https://golden-admin-7zn8.vercel.app"
+      "https://golden-admin-rouge.vercel.app"
     ],
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
     allowedHeaders: ["Content-Type", "Authorization"],
