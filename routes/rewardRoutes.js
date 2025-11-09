@@ -10,7 +10,7 @@ const { auth, authorizeRole } = require("../middlewares/auth");
 
 // CRUD routes
 router.post("/", auth, authorizeRole("ADMIN"), createReward);
-router.get("/",  auth, authorizeRole("ADMIN"),getAllRewards);
+router.get("/",getAllRewards);
 router.delete("/:id", auth, authorizeRole("ADMIN"),deleteReward);
 router.put("/:id", auth, authorizeRole("ADMIN"),updateReward);
 
