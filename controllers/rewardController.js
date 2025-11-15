@@ -5,7 +5,10 @@ exports.createReward = async (req, res) => {
   try {
     const { reward_number } = req.body;
 
-    // Check if file aya hai
+    if (!reward_number) {
+      return res.status(400).json({ message: "Reward number is required" });
+    }
+
     if (!req.files || !req.files.image) {
       return res.status(400).json({ message: "Image file is required" });
     }
@@ -15,18 +18,20 @@ exports.createReward = async (req, res) => {
     // Upload image to Cloudinary
     const uploadedImage = await uploadToCloudinary(imageFile, "rewards");
 
-    // Create reward with image URL
+    // Create reward
     const reward = new Reward({
       reward_number,
-      media: uploadedImage.secure_url, // yahan image URL aayega
+      media: uploadedImage.secure_url,
     });
 
     await reward.save();
+
     res.status(201).json({
       success: true,
       message: "Reward created successfully",
       reward,
     });
+
   } catch (err) {
     console.error("Error creating reward:", err);
     res.status(500).json({

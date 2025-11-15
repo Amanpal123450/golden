@@ -14,7 +14,7 @@ exports.verifyGiftNumber = async (req, res) => {
       });
     }
 
-    // Find reward by number
+    // Check reward exists
     const reward = await Reward.findOne({ reward_number: gift_number.trim() });
 
     if (!reward) {
@@ -25,7 +25,7 @@ exports.verifyGiftNumber = async (req, res) => {
       });
     }
 
-    // Check if already claimed
+    // Already used check
     if (reward.is_claimed) {
       return res.status(400).json({
         success: false,
@@ -39,8 +39,7 @@ exports.verifyGiftNumber = async (req, res) => {
     reward.claimed_at = new Date();
     await reward.save();
 
-    // Return reward details
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       message: "Gift number verified successfully",
       redirect: "/reward",
@@ -60,3 +59,4 @@ exports.verifyGiftNumber = async (req, res) => {
     });
   }
 };
+;
