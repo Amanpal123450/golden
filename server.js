@@ -31,12 +31,15 @@ app.use(
 // CORS setup
 app.use(
   cors({
-    origin: "*",
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+    origin: [
+      "https://golden-admin-rouge.vercel.app",
+      "https://golden-4.onrender.com",
+    ],
+    methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true,
   })
 );
+
 
 // Middleware
 app.use(express.json());
