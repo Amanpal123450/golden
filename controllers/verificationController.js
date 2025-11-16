@@ -1,7 +1,7 @@
 const Verification = require("../models/Verification");
+const Reward = require("../models/Reward");
 const { uploadToCloudinary } = require("../utils/imageUploader"); // utility to upload image
 // const User = require("../models/User");
-
 // 🧾 User submits verification form
 exports.submitVerification = async (req, res) => {
   try {
@@ -14,20 +14,47 @@ exports.submitVerification = async (req, res) => {
       district,
       pincode,
       address,
+      reward_number, // ⬅ reward number frontend se bhejna zaroori
     } = req.body;
 
-    if (!name || !email || !phone || !country || !state || !district || !pincode || !address) {
-      return res.status(400).json({ success: false, message: "All fields are required" });
+    // 🔍 Check all fields
+    if (
+      !name || !email || !phone || !country ||
+      !state || !district || !pincode || !address || !reward_number
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "All fields are required"
+      });
     }
 
-    let photoUrl = null;
+    // 🎁 Reward ko database me search karo
+    const reward = await Reward.findOne({ reward_number });
 
-    // If user uploaded a file
+    if (!reward) {
+      return res.status(404).json({
+        success: false,
+        message: "Invalid gift number"
+      });
+    }
+
+    // ❌ Check if reward already claimed
+    if (reward.is_claimed) {
+      return res.status(400).json({
+        success: false,
+        message: "This gift number has already been used",
+        redirect: "/error"
+      });
+    }
+
+    // 📸 Upload Image
+    let photoUrl = null;
     if (req.files && req.files.photo) {
       const uploaded = await uploadToCloudinary(req.files.photo, "verification_photos");
       photoUrl = uploaded.secure_url;
     }
 
+    // 📝 Save Verification Form
     const verification = await Verification.create({
       name,
       email,
@@ -38,19 +65,31 @@ exports.submitVerification = async (req, res) => {
       pincode,
       address,
       photo: photoUrl,
-      user: req.user ? req.user._id : null, // optional, if logged in
+      reward_number,               // ⬅ Added
+      user: req.user ? req.user._id : null,
     });
+
+    // 🟢 Reward ko claimed mark karo
+    reward.is_claimed = true;
+    reward.claimed_at = new Date();
+    await reward.save();
 
     return res.status(201).json({
       success: true,
       message: "Verification submitted successfully",
       verification,
     });
+
   } catch (error) {
     console.error("Verification Error:", error);
-    res.status(500).json({ success: false, message: "Server error", error: error.message });
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+      error: error.message
+    });
   }
 };
+
 
 // 📋 Admin gets all verifications
 exports.getAllVerifications = async (req, res) => {

@@ -34,7 +34,10 @@ app.use(
     origin: [
       "https://golden-admin-rouge.vercel.app",
       "https://golden-4.onrender.com",
-      "https://golden-user.vercel.app"
+      "https://golden-user.vercel.app",
+      "http://localhost:5173",
+      "http://localhost:3000",
+      "http://localhost:3000"
     ],
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],

@@ -34,9 +34,9 @@ exports.verifyGiftNumber = async (req, res) => {
       });
     }
 
-    // Mark as claimed
-    reward.is_claimed = true;
-    reward.claimed_at = new Date();
+    // // Mark as claimed
+    // reward.is_claimed = true;
+    // reward.claimed_at = new Date();
     await reward.save();
 
     return res.status(200).json({
